@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { BarChart3, Package, Users, FileText, TrendingUp, Circle } from 'lucide-react';
+import { BarChart3, Package, Users, FileText, TrendingUp, Circle, Menu, X } from 'lucide-react';
 
 export default function BusinessManagementSystem() {
   const [activeSection, setActiveSection] = useState('portfolio');
   const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const sections = [
     { id: 'portfolio', label: 'Portfolio', icon: BarChart3 },
@@ -88,7 +89,7 @@ export default function BusinessManagementSystem() {
       {/* Header */}
       <header style={{
         borderBottom: '1px solid #2a2a2a',
-        padding: '1.5rem 3rem',
+        padding: '1rem 1.5rem',
         background: 'rgba(10, 10, 10, 0.8)',
         backdropFilter: 'blur(10px)',
         position: 'sticky',
@@ -103,17 +104,33 @@ export default function BusinessManagementSystem() {
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <h1 style={{
-            margin: 0,
-            fontSize: '2rem',
-            fontWeight: 400,
-            letterSpacing: '0.02em',
-            color: '#fff'
-          }}>
-            Command Center
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              style={{
+                display: 'none',
+                background: 'transparent',
+                border: 'none',
+                color: '#fff',
+                cursor: 'pointer',
+                padding: '0.5rem'
+              }}
+              className="mobile-menu-btn"
+            >
+              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <h1 style={{
+              margin: 0,
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+              fontWeight: 400,
+              letterSpacing: '0.02em',
+              color: '#fff'
+            }}>
+              Command Center
+            </h1>
+          </div>
           <div style={{
-            fontSize: '0.875rem',
+            fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
             color: '#999',
             fontFamily: '"Inter", sans-serif',
             letterSpacing: '0.05em',
@@ -123,6 +140,24 @@ export default function BusinessManagementSystem() {
           </div>
         </div>
       </header>
+
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 98,
+            display: 'none'
+          }}
+          className="mobile-overlay"
+        />
+      )}
 
       <div style={{ 
         display: 'flex',
@@ -136,7 +171,19 @@ export default function BusinessManagementSystem() {
           borderRight: '1px solid #2a2a2a',
           padding: '2rem 0',
           background: 'rgba(15, 15, 15, 0.5)',
-          animation: 'slideRight 0.6s ease-out'
+          animation: 'slideRight 0.6s ease-out',
+          position: 'fixed',
+          left: sidebarOpen ? 0 : '-240px',
+          top: '73px',
+          height: 'calc(100vh - 73px)',
+          zIndex: 99,
+          transition: 'left 0.3s ease',
+          '@media (min-width: 768px)': {
+            position: 'static',
+            left: 'auto',
+            top: 'auto',
+            height: 'auto'
+          }
         }}>
           {sections.map((section, index) => {
             const Icon = section.icon;
@@ -185,15 +232,19 @@ export default function BusinessManagementSystem() {
         {/* Main Content */}
         <main style={{
           flex: 1,
-          padding: '3rem',
+          padding: 'clamp(1rem, 4vw, 3rem)',
           overflowY: 'auto',
-          animation: 'fadeIn 0.6s ease-out'
+          animation: 'fadeIn 0.6s ease-out',
+          marginLeft: sidebarOpen ? '0' : '0',
+          '@media (min-width: 768px)': {
+            marginLeft: '0'
+          }
         }}>
           {activeSection === 'portfolio' && (
             <div>
               <h2 style={{
                 margin: '0 0 0.5rem 0',
-                fontSize: '2.5rem',
+                fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
                 fontWeight: 300,
                 color: '#fff'
               }}>
@@ -203,7 +254,7 @@ export default function BusinessManagementSystem() {
                 margin: '0 0 3rem 0',
                 color: '#888',
                 fontFamily: '"Inter", sans-serif',
-                fontSize: '0.95rem'
+                fontSize: 'clamp(0.875rem, 2.5vw, 0.95rem)'
               }}>
                 All your ventures in one place
               </p>
@@ -250,7 +301,7 @@ export default function BusinessManagementSystem() {
                       {stat.label}
                     </div>
                     <div style={{
-                      fontSize: '2.5rem',
+                      fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
                       fontWeight: 300,
                       color: '#fff',
                       marginBottom: '0.5rem',
@@ -289,12 +340,12 @@ export default function BusinessManagementSystem() {
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase'
                 }}>
-                  <div>Business</div>
-                  <div>Monthly Revenue</div>
-                  <div>Daily Avg</div>
-                  <div>Profit</div>
-                  <div>Margin</div>
-                  <div>Trend</div>
+                  <div data-label="Business">Business</div>
+                  <div data-label="Monthly Revenue">Monthly Revenue</div>
+                  <div data-label="Daily Avg">Daily Avg</div>
+                  <div data-label="Profit">Profit</div>
+                  <div data-label="Margin">Margin</div>
+                  <div data-label="Trend">Trend</div>
                 </div>
 
                 {businessData.map((business, index) => (
@@ -320,12 +371,12 @@ export default function BusinessManagementSystem() {
                       e.currentTarget.style.background = 'transparent';
                     }}
                   >
-                    <div style={{ color: '#fff', fontFamily: '"Inter", sans-serif' }}>{business.name}</div>
-                    <div>{business.monthlyRevenue}</div>
-                    <div>{business.dailyAvg}</div>
-                    <div>{business.profit}</div>
-                    <div>{business.margin}</div>
-                    <div style={{ color: '#4ade80' }}>{business.trend}</div>
+                    <div style={{ color: '#fff', fontFamily: '"Inter", sans-serif' }} data-label="Business">{business.name}</div>
+                    <div data-label="Monthly Revenue">{business.monthlyRevenue}</div>
+                    <div data-label="Daily Avg">{business.dailyAvg}</div>
+                    <div data-label="Profit">{business.profit}</div>
+                    <div data-label="Margin">{business.margin}</div>
+                    <div style={{ color: '#4ade80' }} data-label="Trend">{business.trend}</div>
                   </div>
                 ))}
               </div>
@@ -866,6 +917,70 @@ export default function BusinessManagementSystem() {
         
         ::-webkit-scrollbar-thumb:hover {
           background: #444;
+        }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 767px) {
+          .mobile-menu-btn {
+            display: block !important;
+          }
+          
+          .mobile-overlay {
+            display: block !important;
+          }
+          
+          body {
+            overflow-x: hidden;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          nav {
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            height: auto !important;
+          }
+        }
+        
+        /* Responsive Grid Adjustments */
+        @media (max-width: 640px) {
+          div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+          }
+          
+          div[style*="padding: 2rem"] {
+            padding: 1rem !important;
+          }
+          
+          div[style*="padding: 1.5rem 2rem"] {
+            padding: 1rem !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          div[style*="gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr'"] {
+            grid-template-columns: 1fr !important;
+            gap: 0.5rem !important;
+          }
+          
+          /* Mobile table styling */
+          div[style*="gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr'"] > div {
+            padding: 1rem !important;
+            border-bottom: 1px solid #2a2a2a !important;
+          }
+          
+          div[style*="gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr'"] > div > div:first-child::after {
+            content: attr(data-label);
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+            font-family: "Inter", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+          }
         }
       `}</style>
     </div>
